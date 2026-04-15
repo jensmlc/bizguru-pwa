@@ -59,6 +59,9 @@ h1, h2, h3, .stat-number, .project-title, .focus-card-title, .cmd-input {
     letter-spacing: -0.02em;
 }
 
+::selection { background: var(--accent-green); color: #0A0A0A; }
+html.light-mode ::selection { background: var(--accent-blue); color: #0A0A0A; }
+
 .container { max-width: 1400px; margin: 0 auto; }
 .touch-target { min-height: 44px; min-width: 44px; display: inline-flex; align-items: center; justify-content: center; }
 
@@ -159,6 +162,7 @@ footer { text-align: center; padding: 32px 0; border-top: 1px solid var(--border
 .cursor.hovering { width: 56px; height: 56px; background: var(--accent-green); border-color: var(--accent-green); mix-blend-mode: difference; }
 .cursor-dot { position: fixed; width: 5px; height: 5px; border-radius: 50%; background: var(--accent-green); pointer-events: none; z-index: 10001; transform: translate(-50%, -50%); opacity: 0; transition: opacity 0.3s; }
 .cursor-dot.visible { opacity: 1; }
+@media (hover: hover) { body { cursor: none; } }
 @media (hover: none) { .cursor, .cursor-dot { display: none !important; } }
 
 /* Bottom Bar (Mobile) */

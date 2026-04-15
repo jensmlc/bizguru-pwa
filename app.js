@@ -40,6 +40,7 @@ function init() {
     generateBriefing();
     applyFilters();
     initCursor();
+    initKeyboardHandlers();
     
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('sw.js').then(() => console.log('SW registered'));
@@ -88,6 +89,23 @@ function initCursor() {
             }
         });
     }
+}
+
+function initKeyboardHandlers() {
+    document.querySelectorAll('.project-card, .focus-card, .stat-card').forEach(card => {
+        card.setAttribute('role', 'button');
+        card.setAttribute('tabindex', '0');
+        card.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                card.click();
+            }
+        });
+    });
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        const filterText = btn.textContent.trim();
+        btn.setAttribute('aria-label', `Filter by ${filterText}`);
+    });
 }
 
 function escapeHtml(str) {
