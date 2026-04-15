@@ -1,0 +1,55 @@
+{
+  "projects": [
+    {
+      "id": 1,
+      "title": "OpenClaw Platform Research",
+      "category": "Research",
+      "status": "Complete",
+      "progress": 100,
+      "date": "2026-04-14",
+      "description": "Comprehensive research on OpenClaw architecture and capabilities"
+    },
+    {
+      "id": 2,
+      "title": "BizGuru Strategy",
+      "category": "Strategy",
+      "status": "Complete",
+      "progress": 100,
+      "date": "2026-04-14",
+      "description": "Commission sales positioning and go-to-market strategy"
+    },
+    {
+      "id": 3,
+      "title": "Dashboard v2 Development",
+      "category": "Development",
+      "status": "Complete",
+      "progress": 100,
+      "date": "2026-04-14",
+      "description": "Interactive dashboard with Focus Zone and Morning Briefing"
+    },
+    {
+      "id": 4,
+      "title": "iOS App Research",
+      "category": "Research",
+      "status": "In Progress",
+      "progress": 75,
+      "date": "2026-04-14",
+      "description": "PWA, Capacitor, and native iOS development options"
+    },
+    {
+      "id": 5,
+      "title": "PWA Implementation",
+      "category": "Development",
+      "status": "In Progress",
+      "progress": 50,
+      "date": "2026-04-14",
+      "description": "Convert dashboard to installable PWA for iPhone"
+    }
+  ],
+  "stats": {
+    "total": 5,
+    "complete": 3,
+    "inProgress": 2,
+    "pending": 0
+  }
+}
