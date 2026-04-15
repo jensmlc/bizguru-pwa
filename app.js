@@ -39,6 +39,7 @@ function init() {
     renderFocusZone();
     generateBriefing();
     applyFilters();
+    initCursor();
     
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('sw.js').then(() => console.log('SW registered'));
@@ -50,6 +51,43 @@ function init() {
             openCmdPalette();
         }
     });
+}
+
+function initCursor() {
+    const cursor = document.getElementById('cursor');
+    const cursorDot = document.getElementById('cursorDot');
+    if (cursor && cursorDot && !('ontouchstart' in window)) {
+        let cx = 0, cy = 0, dx = 0, dy = 0;
+        document.addEventListener('mousemove', e => {
+            cx = e.clientX; cy = e.clientY;
+            cursorDot.style.left = cx + 'px';
+            cursorDot.style.top = cy + 'px';
+            if (!cursor.classList.contains('visible')) {
+                cursor.classList.add('visible');
+                cursorDot.classList.add('visible');
+            }
+        });
+        
+        function cursorLoop() {
+            dx += (cx - dx) * 0.15;
+            dy += (cy - dy) * 0.15;
+            cursor.style.left = dx + 'px';
+            cursor.style.top = dy + 'px';
+            requestAnimationFrame(cursorLoop);
+        }
+        requestAnimationFrame(cursorLoop);
+        
+        document.addEventListener('mouseover', e => {
+            if (e.target.closest('button, a, .touch-target, .project-card, .cmd-item, input')) {
+                cursor.classList.add('hovering');
+            }
+        });
+        document.addEventListener('mouseout', e => {
+            if (e.target.closest('button, a, .touch-target, .project-card, .cmd-item, input')) {
+                cursor.classList.remove('hovering');
+            }
+        });
+    }
 }
 
 function escapeHtml(str) {
@@ -196,8 +234,8 @@ function viewDetails(id) {
         <span class="badge status ${p.status}">${formatStatus(p.status)}</span>
         <span class="badge category" style="margin-left:8px">${escapeHtml(p.category)}</span>
         <div style="margin-top:20px; font-size:16px; line-height:1.6">${escapeHtml(p.description)}</div>
-        <div style="margin-top:20px; font-size:14px; color:var(--text-muted)">File path: <code style="background:var(--bg-elevated);padding:4px 8px;border-radius:4px;">${p.file}</code></div>
-        <button class="action-btn touch-target" style="margin-top:30px; background:var(--accent-blue); color:white" onclick="closeDetails()">Close</button>
+        <div style="margin-top:20px; font-size:14px; color:var(--text-muted)">File path: <code style="background:var(--bg-input);padding:4px 8px;border-radius:4px;border:1px solid var(--border);">${p.file}</code></div>
+        <button class="action-btn touch-target" style="margin-top:30px; background:linear-gradient(135deg, var(--accent-blue), var(--accent-green)); color:#0A0A0A; border:none;" onclick="closeDetails()">Close</button>
     `;
     document.getElementById('sheetOverlay').classList.add('open');
     document.getElementById('detailsSheet').classList.add('open');
