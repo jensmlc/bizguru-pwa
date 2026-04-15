@@ -9,216 +9,90 @@
     <title>BizGuru Dashboard</title>
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icons/icon-192x192.png">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        :root {
-            --bg-base: #0c1220;
-            --bg-surface: #151f2e;
-            --bg-elevated: #1a2740;
-            --border: #243450;
-            --text-primary: #f0f4f8;
-            --text-secondary: #8fa3bc;
-            --accent-blue: #4f8ef7;
-            --accent-green: #34d399;
-            --accent-amber: #f59e0b;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--bg-base);
-            color: var(--text-primary);
-            padding: 16px;
-            line-height: 1.5;
-        }
-        
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        
-        h1 { font-size: 24px; font-weight: 700; }
-        
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-        
-        .stat-card {
-            background: var(--bg-surface);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 16px;
-            text-align: center;
-        }
-        
-        .stat-value {
-            font-size: 28px;
-            font-weight: 700;
-            color: var(--accent-blue);
-        }
-        
-        .stat-label {
-            font-size: 12px;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .project-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        
-        .project-card {
-            background: var(--bg-surface);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 16px;
-            border-left: 3px solid var(--accent-blue);
-        }
-        
-        .project-card.complete { border-left-color: var(--accent-green); }
-        .project-card.in-progress { border-left-color: var(--accent-amber); }
-        
-        .project-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 8px;
-        }
-        
-        .project-title {
-            font-weight: 600;
-            font-size: 16px;
-        }
-        
-        .project-status {
-            font-size: 11px;
-            padding: 4px 8px;
-            border-radius: 4px;
-            background: var(--bg-elevated);
-            color: var(--text-secondary);
-        }
-        
-        .project-category {
-            font-size: 12px;
-            color: var(--accent-blue);
-            margin-bottom: 4px;
-        }
-        
-        .project-description {
-            font-size: 14px;
-            color: var(--text-secondary);
-        }
-        
-        .offline-badge {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            background: var(--accent-amber);
-            color: #000;
-            text-align: center;
-            padding: 8px;
-            font-size: 12px;
-            font-weight: 600;
-            display: none;
-        }
-        
-        .offline .offline-badge { display: block; }
-        body.offline { padding-top: 40px; }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="offline-badge">Offline Mode — Using Cached Data</div>
-    
-    <div class="header">
-        <h1>🎯 BizGuru</h1>
-        <span id="date"></span>
+    <div class="container">
+        <header>
+            <div>
+                <h1 style="display:flex;align-items:center;gap:10px;">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent-blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>
+                    BizGuru Dashboard
+                </h1>
+                <p class="header-subtitle">Projects • Research • Action Items (Powered by OpenClaw)</p>
+            </div>
+            <div class="header-buttons">
+                <button onclick="toggleBriefing()" class="touch-target">☀️ Briefing</button>
+                <button class="secondary touch-target" onclick="toggleDarkMode()">🌙 Theme</button>
+                <button class="secondary touch-target" onclick="requestPushPermission()">🔔 Notify</button>
+            </div>
+        </header>
+
+        <div class="focus-zone">
+            <div class="focus-zone-header">
+                <span class="focus-zone-title">⚡ Today's Focus</span>
+                <span style="font-size: 12px; color: var(--text-muted);">Items needing action</span>
+            </div>
+            <div class="focus-grid" id="focusGrid"></div>
+        </div>
+
+        <div class="briefing-panel active" id="briefingPanel">
+            <h3>
+                ☀️ Morning Briefing
+                <span style="flex:1"></span>
+                <button class="briefing-collapse-btn touch-target" onclick="toggleBriefing()">▲ collapse</button>
+            </h3>
+            <div id="briefingContent"></div>
+        </div>
+
+        <div class="stats" id="statsContainer"></div>
+
+        <div class="controls">
+            <div class="search-box">
+                <input type="text" id="searchInput" class="touch-target" placeholder="Search... (Cmd+K)" autocomplete="off" oninput="applyFilters()">
+            </div>
+            <div class="filter-group" id="filterGroup">
+                <button class="filter-btn active touch-target" data-filter="all" onclick="filterByCategory(this)">All</button>
+                <button class="filter-btn touch-target" data-filter="BizGuru" onclick="filterByCategory(this)">BizGuru</button>
+                <button class="filter-btn touch-target" data-filter="OpenClaw" onclick="filterByCategory(this)">OpenClaw</button>
+                <button class="filter-btn touch-target" data-filter="Marketing" onclick="filterByCategory(this)">Marketing</button>
+                <button class="filter-btn touch-target" data-filter="Setup" onclick="filterByCategory(this)">Setup</button>
+                <div style="width:1px; height:24px; background:var(--border); margin:0 8px;"></div>
+                <button class="filter-btn touch-target" id="hideCompleteBtn" onclick="toggleHideComplete()">Hide Complete</button>
+            </div>
+        </div>
+
+        <div id="projectsContainer" class="projects-grid"></div>
+
+        <footer>
+            Showing <span id="projectCount">0</span> projects
+        </footer>
     </div>
-    
-    <div class="stats">
-        <div class="stat-card">
-            <div class="stat-value" id="stat-total">0</div>
-            <div class="stat-label">Total</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-value" id="stat-complete">0</div>
-            <div class="stat-label">Complete</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-value" id="stat-progress">0</div>
-            <div class="stat-label">In Progress</div>
+
+    <!-- Mobile Bottom Bar -->
+    <div class="bottom-bar">
+        <button onclick="toggleBriefing()" class="bottom-bar-btn">☀️ Briefing</button>
+        <button onclick="openCmdPalette()" class="bottom-bar-btn">🔍 Search</button>
+        <button onclick="toggleDarkMode()" class="bottom-bar-btn">🌙 Theme</button>
+    </div>
+
+    <!-- Bottom Sheet -->
+    <div class="sheet-overlay" id="sheetOverlay" onclick="closeDetails(event)"></div>
+    <div class="bottom-sheet" id="detailsSheet">
+        <div class="sheet-drag-handle"></div>
+        <div id="sheetContent"></div>
+    </div>
+
+    <!-- Cmd+K Palette -->
+    <div class="cmd-palette-overlay" id="cmdPaletteOverlay" onclick="closeCmdPalette(event)">
+        <div class="cmd-palette" onclick="event.stopPropagation()">
+            <input type="text" id="cmdInput" class="cmd-input" placeholder="Search projects or commands..." autocomplete="off">
+            <div class="cmd-results" id="cmdResults"></div>
         </div>
     </div>
-    
-    <div class="project-list" id="projects"></div>
-    
-    <script>
-        // Set date
-        document.getElementById('date').textContent = new Date().toLocaleDateString();
-        
-        // Load projects
-        async function loadProjects() {
-            try {
-                const response = await fetch('data/projects.json');
-                const data = await response.json();
-                renderProjects(data);
-            } catch (error) {
-                console.log('Using cached data or offline');
-            }
-        }
-        
-        function renderProjects(data) {
-            // Update stats
-            document.getElementById('stat-total').textContent = data.stats.total;
-            document.getElementById('stat-complete').textContent = data.stats.complete;
-            document.getElementById('stat-progress').textContent = data.stats.inProgress;
-            
-            // Render projects
-            const container = document.getElementById('projects');
-            container.innerHTML = data.projects.map(p => `
-                <div class="project-card ${p.status.toLowerCase().replace(' ', '-')}">
-                    <div class="project-header">
-                        <div>
-                            <div class="project-category">${p.category}</div>
-                            <div class="project-title">${p.title}</div>
-                        </div>
-                        <span class="project-status">${p.status}</span>
-                    </div>
-                    <div class="project-description">${p.description}</div>
-                </div>
-            `).join('');
-        }
-        
-        // Register service worker
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js')
-                .then(reg => console.log('Service Worker registered'))
-                .catch(err => console.log('Service Worker failed', err));
-        }
-        
-        // Check online status
-        function updateOnlineStatus() {
-            if (!navigator.onLine) {
-                document.body.classList.add('offline');
-            } else {
-                document.body.classList.remove('offline');
-            }
-        }
-        
-        window.addEventListener('online', updateOnlineStatus);
-        window.addEventListener('offline', updateOnlineStatus);
-        updateOnlineStatus();
-        
-        // Load data
-        loadProjects();
-    </script>
+
+    <div id="toastContainer" class="toast-container"></div>
+
+    <script src="app.js"></script>
 </body>
 </html>
